@@ -1,3 +1,51 @@
+// Currency Detection and Pricing Update
+function updatePricing(countryCode) {
+    const prices = document.querySelectorAll('.price');
+    const currencyNote = document.getElementById('currency-note');
+
+    prices.forEach(priceElement => {
+        const currencySymbol = priceElement.querySelector('.currency');
+        const amountElement = priceElement.querySelector('.amount');
+
+        if (countryCode === 'IN') {
+            // India - show INR
+            const inrPrice = priceElement.getAttribute('data-inr');
+            currencySymbol.textContent = '₹';
+            amountElement.textContent = inrPrice.toLocaleString('en-IN');
+            if (currencyNote) {
+                currencyNote.textContent = 'Prices shown in Indian Rupees (INR)';
+            }
+        } else {
+            // Other countries - show USD
+            const usdPrice = priceElement.getAttribute('data-usd');
+            currencySymbol.textContent = '$';
+            amountElement.textContent = usdPrice;
+            if (currencyNote) {
+                currencyNote.textContent = 'Prices shown in US Dollars (USD)';
+            }
+        }
+    });
+}
+
+// Detect user's country using geolocation API
+function detectCountry() {
+    // Try using ipapi.co for geolocation
+    fetch('https://ipapi.co/country_code/')
+        .then(response => response.text())
+        .then(countryCode => {
+            updatePricing(countryCode.trim());
+        })
+        .catch(error => {
+            console.log('Could not detect country, defaulting to USD');
+            updatePricing('US'); // Default to USD if detection fails
+        });
+}
+
+// Initialize pricing on page load
+document.addEventListener('DOMContentLoaded', () => {
+    detectCountry();
+});
+
 // Mobile Navigation Toggle
 const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-menu');
